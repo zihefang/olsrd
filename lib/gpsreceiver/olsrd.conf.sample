@@ -1,0 +1,6 @@
+LoadPlugin "<olsrd plugin library path>/olsrd_gpsreceiver.so.1.0.0"
+{
+	PlParam "GpsInterface" "gps0"
+	PlParam "GpsMulticastAddr" "224.0.0.224"
+	PlParam "GpsPort" 2240
+}

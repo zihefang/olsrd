@@ -66,5 +66,6 @@ void ipc_print_version(struct autobuf *abuf);
 void ipc_print_olsrd_conf(struct autobuf *abuf);
 void ipc_print_interfaces(struct autobuf *abuf);
 void ipc_print_twohop(struct autobuf *abuf);
+void ipc_print_lq_gps(struct autobuf *abuf);
 
 #endif /* LIB_TXTINFO_SRC_OLSRD_TXTINFO_H_ */

@@ -1096,7 +1096,48 @@ void olsrd_write_cnf_autobuf_uncached(struct autobuf *out, struct olsrd_config *
       (double)cnf->lq_aging);
   abuf_appendf(out,
     "\n"
-    "# Fisheye mechanism for TCs (0 meansoff, 1 means on)\n"
+    "# Link quality internal multiplier for ext_gps algorithm.\n"
+    "# The lq score is multiplied by alpha*exp(beta*(distance variation)),\n"
+    "# this is the beta in the formula ; it is expected to be of the same\n"
+    "# order as the distance variation.\n"
+    "# (default is 0.01)\n"
+    "\n");
+
+
+
+  abuf_appendf(out, "%sLinkQualityAlpha %.2f\n",
+      cnf->lq_alpha == (float) DEF_LQ_ALPHA ? "# " : "",
+      (double)cnf->lq_alpha);
+  abuf_puts(out,
+    "\n"
+    "# Link quality external multiplier for ext_gps algorithm.\n"
+    "# The lq score is multiplied by alpha*exp(beta*(distance variation)),\n"
+    "# this is the alpha in the formula.\n"
+    "# (default is 1.0)\n"
+    "\n");
+  abuf_appendf(out, "%sLinkQualityBeta %.2f\n",
+      cnf->lq_beta == (float) DEF_LQ_BETA ? "# " : "",
+      (double)cnf->lq_beta);
+  abuf_puts(out,
+    "\n"
+    "# Link quality GAMMA parameter. Can be of any use.\n"
+    "# (default is 1.0)\n"
+    "\n");
+  abuf_appendf(out, "%sLinkQualityGamma %.2f\n",
+      cnf->lq_gamma == (float) DEF_LQ_GAMMA ? "# " : "",
+      (double)cnf->lq_gamma);
+  abuf_puts(out,
+    "\n"
+    "# Link quality DELTA parameter. Can be of any use.\n"
+    "# (default is 1.0)\n"
+    "\n");
+  abuf_appendf(out, "%sLinkQualityDelta %.2f\n",
+      cnf->lq_delta == (float) DEF_LQ_DELTA ? "# " : "",
+      (double)cnf->lq_delta);
+  abuf_puts(out,
+    "\n"
+    "# Fisheye mechanism for TCs (0 meansoff, 1 means on)\n");
+  abuf_appendf(out,
     "# (default is %u)\n"
     "\n", DEF_LQ_FISH);
   abuf_appendf(out, "%sLinkQualityFishEye  %d\n",

@@ -342,6 +342,9 @@ deserialize_hello(struct hello_message *hello, const void *ser)
   pkt_get_reltime(&curr, &hello->htime);
   pkt_get_u8(&curr, &hello->willingness);
 
+  // retrieve global lq data
+  olsr_deserialize_hello_global_lq_data(&curr);
+
   hello->neighbors = NULL;
 
   limit = ((const unsigned char *)ser) + size;

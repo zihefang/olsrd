@@ -71,7 +71,9 @@
 #include "gateway.h"
 #include "duplicate_handler.h"
 #include "olsr_random.h"
+#include "debug.h"
 
+#include <string.h>
 #include <stdarg.h>
 #include <signal.h>
 #include <unistd.h>
@@ -106,7 +108,7 @@ void olsr_do_startup_sleep(void)
            sum_startup_sleep,max_startup_sleep);
   sleep(max_startup_sleep);
 #else /* OLSR_COLLECT_STARTUP_SLEEP */
-  if (sum_startup_sleep > 0) 
+  if (sum_startup_sleep > 0)
     printf("olsrd startup was delayed %i seconds due to various nasty error messages.\nYOU SHOULD REALLY FIX ABOVE PROBLEMS!\n",
            sum_startup_sleep);
 #endif /* OLSR_COLLECT_STARTUP_SLEEP */
@@ -230,17 +232,22 @@ olsr_process_changes(void)
         olsr_print_hna_set();
       }
     }
-    olsr_print_link_set();
+    //olsr_print_link_set();
     olsr_print_neighbor_table();
     olsr_print_two_hop_neighbor_table();
     if (olsr_cnf->debug_level > 3) {
       olsr_print_tc_table();
     }
   }
+  #ifdef _OLSR_DEBUG_H_
+      olsr_print_buffered_strings();
+  #endif /* _OLSR_DEBUG_H_ */
 
   for (tmp_pc_list = pcf_list; tmp_pc_list != NULL; tmp_pc_list = tmp_pc_list->next) {
     tmp_pc_list->function(changes_neighborhood, changes_topology, changes_hna);
   }
+
+  olsr_print_link_set();
 
   changes_neighborhood = false;
   changes_topology = false;

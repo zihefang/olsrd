@@ -61,6 +61,10 @@
 #include "info/http_headers.h"
 #include "gateway_default_handler.h"
 
+/* Predictive-OLSR */
+#include "link_set.h"
+#include "lq_plugin_gps_lite.h"
+
 unsigned long long get_supported_commands_mask(void) {
   return (SIW_ALL | SIW_OLSRD_CONF) & ~(SIW_CONFIG | SIW_PLUGINS);
 }
@@ -126,6 +130,10 @@ bool isCommand(const char *str, unsigned long long siw) {
 
     case SIW_VERSION:
       cmd = "/ver";
+      break;
+
+    case SIW_LQ_GPS:
+      cmd = "/lq";
       break;
 
     case SIW_NEIGHBORS_FREIFUNK:
@@ -608,6 +616,28 @@ void ipc_print_interfaces(struct autobuf *abuf) {
   }
   abuf_puts(abuf, "\n");
 }
+
+void ipc_print_lq_gps(struct autobuf *abuf) {
+  struct link_entry *my_link;
+  struct lq_link_gps_lite *lq;
+  struct ipaddr_str buf;
+
+  abuf_puts(abuf, "Table: LQ-GPS\nNeighbour IP\tLQ\tNLQ\tMLQ\tLatitude\tLongitude\tAltitude\tDistance\tSpeed\n");
+  OLSR_FOR_ALL_LINK_ENTRIES(my_link) {
+    lq = (struct lq_link_gps_lite *)my_link->linkquality;
+    abuf_appendf(abuf, "%s\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",
+      olsr_ip_to_string(&buf, &my_link->neighbor_iface_addr),
+      (double) lq->lq.lq,
+      (double) lq->lq.nlq,
+      (double) lq->lq.mlq,
+      (double) lq->nposition.lat,
+      (double) lq->nposition.lon,
+      (double) lq->nposition.alt,
+      (double) lq->distance,
+      (double) lq->speed);
+  } OLSR_FOR_ALL_LINK_ENTRIES_END(my_link)
+}
+
 
 void ipc_print_twohop(struct autobuf *abuf) {
   ipc_print_neighbors_internal(abuf, true);

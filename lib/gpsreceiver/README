@@ -1,0 +1,1 @@
+This plugin depends on the NMEA parsing library from PUD plugin, expected to be found at ../pud/nmealib

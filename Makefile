@@ -44,7 +44,7 @@
 # Please also write a new version to:
 # gui/win32/Main/Frontend.rc (line 71, around "CAPTION [...]")
 # gui/win32/Inst/installer.nsi (line 57, around "MessageBox MB_YESNO [...]")
-VERS =		pre-0.9.1
+VERS =		pre-0.9.1-smavnet
 
 TOPDIR = $(shell pwd)
 INSTALLOVERWRITE ?=
@@ -94,7 +94,7 @@ endif
 cfgparser:	$(CFGDEPS) src/builddata.o
 		$(MAKECMDPREFIX)$(MAKECMD) -C $(CFGDIR)
 
-switch:		
+switch:
 	$(MAKECMDPREFIX)$(MAKECMD) -C $(SWITCHDIR)
 
 # generate it always
@@ -224,7 +224,7 @@ rpm:
 
 # This is quite ugly but at least it works
 ifeq ($(OS),linux)
-SUBDIRS := arprefresh bmf dot_draw dyn_gw dyn_gw_plain httpinfo info jsoninfo mdns mini nameservice netjson p2pd pgraph pud quagga secure sgwdynspeed txtinfo watchdog
+SUBDIRS := arprefresh bmf dot_draw dyn_gw dyn_gw_plain httpinfo info jsoninfo mdns mini nameservice netjson p2pd pgraph pud quagga secure sgwdynspeed txtinfo watchdog gpsreceiver
 else
 ifeq ($(OS),win32)
 SUBDIRS := dot_draw httpinfo info jsoninfo mini netjson pgraph secure txtinfo

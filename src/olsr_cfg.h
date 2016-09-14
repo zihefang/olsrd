@@ -78,6 +78,10 @@
 #define DEF_LQ_FISH          1
 #define DEF_LQ_NAT_THRESH    1.0
 #define DEF_LQ_AGING         0.05
+#define DEF_LQ_ALPHA         1.0
+#define DEF_LQ_BETA          1.0
+#define DEF_LQ_GAMMA         1.0
+#define DEF_LQ_DELTA         1.0
 #define DEF_CLEAR_SCREEN     true
 #define DEF_OLSRPORT         698
 #define DEF_RTPROTO          0 /* 0 means OS-specific default */
@@ -313,6 +317,10 @@ struct olsrd_config {
   uint8_t lq_level;
   uint8_t lq_fish;
   float lq_aging;
+  float lq_alpha;
+  float lq_beta;
+  float lq_gamma;
+  float lq_delta;
   char *lq_algorithm;
 
   float min_tc_vtime;

@@ -52,7 +52,7 @@
 #include "lq_plugin_default_float.h"
 
 static void default_lq_initialize_float(void);
-static olsr_linkcost default_lq_calc_cost_float(const void *lq);
+static olsr_linkcost default_lq_calc_cost_float(void *lq);
 static void default_lq_packet_loss_worker_float(struct link_entry *link, void *lq, bool lost);
 static void default_lq_memorize_foreign_hello_float(void *local, void *foreign);
 static int default_lq_serialize_hello_lq_pair_float(unsigned char *buff, void *lq);
@@ -78,16 +78,23 @@ struct lq_handler lq_etx_float_handler = {
   &default_lq_copy_link2tc_float,
   &default_lq_clear_float,
   &default_lq_clear_float,
+  &default_lq_clear_float,
 
   &default_lq_serialize_hello_lq_pair_float,
   &default_lq_serialize_tc_lq_pair_float,
   &default_lq_deserialize_hello_lq_pair_float,
   &default_lq_deserialize_tc_lq_pair_float,
 
+  &olsr_default_serialize_global_lq,
+  &olsr_default_serialize_global_lq,
+  &olsr_default_deserialize_global_lq,
+  &olsr_default_deserialize_global_lq,
+
   &default_lq_print_float,
   &default_lq_print_float,
   &default_lq_get_cost_scaled,
 
+  sizeof(struct default_lq_float),
   sizeof(struct default_lq_float),
   sizeof(struct default_lq_float),
   4,
@@ -101,7 +108,7 @@ default_lq_initialize_float(void)
 }
 
 static olsr_linkcost
-default_lq_calc_cost_float(const void *ptr)
+default_lq_calc_cost_float(void *ptr)
 {
   const struct default_lq_float *lq = ptr;
   olsr_linkcost cost;

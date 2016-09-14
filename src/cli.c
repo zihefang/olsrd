@@ -160,6 +160,53 @@ int olsr_process_arguments(int argc, char *argv[], struct olsrd_config *cnf, str
     }
 
     /*
+     * Set Predictive-OLSR specific parameters
+     */
+    if(strcmp(*argv, "-lqalpha") == 0) {
+      float tmp_lq_alpha;
+      NEXT_ARG
+      ;
+      CHECK_ARGC;
+
+      sscanf(*argv, "%f", &tmp_lq_alpha);
+      olsr_cnf->lq_alpha = tmp_lq_alpha;
+      continue;
+    }
+
+    if(strcmp(*argv, "-lqbeta") == 0) {
+      float tmp_lq_beta;
+      NEXT_ARG
+      ;
+      CHECK_ARGC;
+
+      sscanf(*argv, "%f", &tmp_lq_beta);
+      olsr_cnf->lq_beta = tmp_lq_beta;
+      continue;
+    }
+
+    if(strcmp(*argv, "-lqgamma") == 0) {
+      float tmp_lq_gamma;
+      NEXT_ARG
+      ;
+      CHECK_ARGC;
+
+      sscanf(*argv, "%f", &tmp_lq_gamma);
+      olsr_cnf->lq_gamma = tmp_lq_gamma;
+      continue;
+    }
+
+    if(strcmp(*argv, "-lqdelta") == 0) {
+      float tmp_lq_delta;
+      NEXT_ARG
+      ;
+      CHECK_ARGC;
+
+      sscanf(*argv, "%f", &tmp_lq_delta);
+      olsr_cnf->lq_delta = tmp_lq_delta;
+      continue;
+    }
+
+    /*
      * Set LQ winsize
      */
     if (strcmp(*argv, "-lqa") == 0) {

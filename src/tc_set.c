@@ -822,6 +822,9 @@ olsr_input_tc(union olsr_message * msg, struct interface_olsr * input_if __attri
   pkt_get_u8(&curr, &lower_border);
   pkt_get_u8(&curr, &upper_border);
 
+  /* retrieve global lq data */
+  olsr_deserialize_tc_global_lq_data(&curr);
+
   tc = olsr_lookup_tc_entry(&originator);
 
   if (vtime < (olsr_reltime)(olsr_cnf->min_tc_vtime*1000)) {

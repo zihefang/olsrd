@@ -60,7 +60,7 @@
 
 static void default_lq_initialize_ff(void);
 
-static olsr_linkcost default_lq_calc_cost_ff(const void *lq);
+static olsr_linkcost default_lq_calc_cost_ff(void *lq);
 
 static void default_lq_packet_loss_worker_ff(struct link_entry *link, void *lq, bool lost);
 static void default_lq_memorize_foreign_hello_ff(void *local, void *foreign);
@@ -91,11 +91,17 @@ struct lq_handler lq_etx_ff_handler = {
   &default_lq_copy_link2tc_ff,
   &default_lq_clear_ff_hello,
   &default_lq_clear_ff,
+  &default_lq_clear_ff_hello,
 
   &default_lq_serialize_hello_lq_pair_ff,
   &default_lq_serialize_tc_lq_pair_ff,
   &default_lq_deserialize_hello_lq_pair_ff,
   &default_lq_deserialize_tc_lq_pair_ff,
+
+  &olsr_default_serialize_global_lq,
+  &olsr_default_serialize_global_lq,
+  &olsr_default_deserialize_global_lq,
+  &olsr_default_deserialize_global_lq,
 
   &default_lq_print_ff,
   &default_lq_print_ff,
@@ -103,6 +109,7 @@ struct lq_handler lq_etx_ff_handler = {
 
   sizeof(struct default_lq_ff_hello),
   sizeof(struct default_lq_ff),
+  sizeof(struct default_lq_ff_hello),
   4,
   4
 };
@@ -281,7 +288,7 @@ default_lq_initialize_ff(void)
 }
 
 static olsr_linkcost
-default_lq_calc_cost_ff(const void *ptr)
+default_lq_calc_cost_ff(void *ptr)
 {
   const struct default_lq_ff *lq = ptr;
   olsr_linkcost cost;

@@ -109,7 +109,7 @@ void olsr_reset_all_links(void) {
 
   OLSR_FOR_ALL_LINK_ENTRIES(link) {
     olsr_expire_link_sym_timer(link);
-    olsr_clear_hello_lq(link);
+    olsr_clear_link_lq(link);
   } OLSR_FOR_ALL_LINK_ENTRIES_END(link)
 }
 

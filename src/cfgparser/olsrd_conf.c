@@ -467,7 +467,7 @@ static int olsrd_sanity_check_rtpolicy(struct olsrd_config *cnf) {
 #endif /* __linux__ */
 
 
-static 
+static
 int olsrd_sanity_check_interface_cnf(struct if_config_options * io, struct olsrd_config * cnf, char* name) {
   struct olsr_lq_mult *mult;
 
@@ -1114,6 +1114,10 @@ set_default_cnf(struct olsrd_config *cnf, char * configuration_file)
   cnf->lq_level = DEF_LQ_LEVEL;
   cnf->lq_fish = DEF_LQ_FISH;
   cnf->lq_aging = DEF_LQ_AGING;
+  cnf->lq_alpha = DEF_LQ_ALPHA;
+  cnf->lq_beta = DEF_LQ_BETA;
+  cnf->lq_gamma = DEF_LQ_GAMMA;
+  cnf->lq_delta = DEF_LQ_DELTA;
   cnf->lq_algorithm = NULL;
 
   cnf->min_tc_vtime = 0.0;
@@ -1277,6 +1281,14 @@ olsrd_print_cnf(struct olsrd_config *cnf)
 
   printf("LQ aging factor  : %f\n", (double)cnf->lq_aging);
 
+  printf("LQ alpha paramater : %f\n", (double) cnf->lq_alpha);
+
+  printf("LQ beta parameter : %f\n", (double) cnf->lq_beta);
+
+  printf("LQ gamma paramater : %f\n", (double) cnf->lq_gamma);
+
+  printf("LQ delta parameter : %f\n", (double) cnf->lq_delta);
+
   printf("LQ algorithm name: %s\n", cnf->lq_algorithm ? cnf->lq_algorithm : "default");
 
   printf("NAT threshold    : %f\n", (double)cnf->lq_nat_thresh);
@@ -1346,7 +1358,7 @@ olsrd_print_cnf(struct olsrd_config *cnf)
     olsrd_print_interface_cnf(cnf->interface_defaults, cnf->interface_defaults, true);
 
     while (in)
-    { 
+    {
       if (cnf->interface_defaults!=in->cnf)
       {
         printf(" dev: \"%s\"\n", in->name);

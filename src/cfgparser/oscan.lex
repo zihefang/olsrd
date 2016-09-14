@@ -58,7 +58,7 @@
 #include "olsrd_conf.h"
 
 #include "oparse.h"
- 
+
 #define ECHO if(fwrite( yytext, yyleng, 1, yyout )) {}
 
 /* Prototypes */
@@ -435,6 +435,26 @@ IPV6ADDR {IPV6PAT1}|{IPV6PAT2}|{IPV6PAT3}|{IPV6PAT4}|{IPV6PAT5}|{IPV6PAT6}|{IPV6
     return TOK_LQ_AGING;
 }
 
+"LinkQualityAlpha" {
+    yylval = NULL;
+    return TOK_LQ_ALPHA;
+}
+
+"LinkQualityBeta" {
+    yylval = NULL;
+    return TOK_LQ_BETA;
+}
+
+"LinkQualityGamma" {
+    yylval = NULL;
+    return TOK_LQ_GAMMA;
+}
+
+"LinkQualityDelta" {
+    yylval = NULL;
+    return TOK_LQ_DELTA;
+}
+
 "LinkQualityAlgorithm" {
     yylval = NULL;
     return TOK_LQ_PLUGIN;
@@ -579,12 +599,12 @@ IPV6ADDR {IPV6PAT1}|{IPV6PAT2}|{IPV6PAT3}|{IPV6PAT4}|{IPV6PAT5}|{IPV6PAT6}|{IPV6
     yylval = NULL;
     return TOK_SMART_GW_UPLINK;
 }
- 
+
 "SmartGatewayUplinkNAT" {
     yylval = NULL;
     return TOK_SMART_GW_UPLINK_NAT;
 }
- 
+
 "SmartGatewaySpeed" {
     yylval = NULL;
     return TOK_SMART_GW_SPEED;

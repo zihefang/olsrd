@@ -214,6 +214,10 @@ static int add_ipv6_addr(YYSTYPE ipaddr_arg, YYSTYPE prefixlen_arg)
 %token TOK_LQ_LEVEL
 %token TOK_LQ_FISH
 %token TOK_LQ_AGING
+%token TOK_LQ_ALPHA
+%token TOK_LQ_BETA
+%token TOK_LQ_GAMMA
+%token TOK_LQ_DELTA
 %token TOK_LQ_PLUGIN
 %token TOK_LQ_NAT_THRESH
 %token TOK_LQ_MULT
@@ -317,6 +321,10 @@ stmt:       idebug
           | alq_fish
           | anat_thresh
           | alq_aging
+          | alq_alpha
+          | alq_beta
+          | alq_gamma
+          | alq_delta
           | bclear_screen
           | vcomment
           | amin_tc_vtime
@@ -481,7 +489,7 @@ ifdblock: TOK_INTERFACE_DEFAULTS
   in->next = olsr_cnf->interfaces;
   olsr_cnf->interfaces = in;
   ifs_in_curr_cfg=1;
-  
+
   fflush(stdout);
 }
 ;
@@ -497,7 +505,7 @@ ipchost: TOK_HOSTLABEL TOK_IPV4_ADDR
 {
   union olsr_ip_addr ipaddr;
   PARSER_DEBUG_PRINTF("\tIPC host: %s\n", $2->string);
-  
+
   if (inet_pton(AF_INET, $2->string, &ipaddr.v4) == 0) {
     fprintf(stderr, "Failed converting IP address IPC %s\n", $2->string);
     YYABORT;
@@ -515,7 +523,7 @@ ipcnet: TOK_NETLABEL TOK_IPV4_ADDR TOK_IPV4_ADDR
   union olsr_ip_addr ipaddr, netmask;
 
   PARSER_DEBUG_PRINTF("\tIPC net: %s/%s\n", $2->string, $3->string);
-  
+
   if (inet_pton(AF_INET, $2->string, &ipaddr.v4) == 0) {
     fprintf(stderr, "Failed converting IP net IPC %s\n", $2->string);
     YYABORT;
@@ -538,7 +546,7 @@ ipcnet: TOK_NETLABEL TOK_IPV4_ADDR TOK_IPV4_ADDR
   union olsr_ip_addr ipaddr;
 
   PARSER_DEBUG_PRINTF("\tIPC net: %s/%s\n", $2->string, $3->string);
-  
+
   if (inet_pton(AF_INET, $2->string, &ipaddr.v4) == 0) {
     fprintf(stderr, "Failed converting IP net IPC %s\n", $2->string);
     YYABORT;
@@ -587,7 +595,7 @@ isetifmode: TOK_IFMODE TOK_STRING
   PARSER_DEBUG_PRINTF("\tMode: %s\n", $2->string);
 
 	SET_IFS_CONF(ifs, ifcnt, mode, mode);
-	
+
   free($2->string);
   free($2);
 }
@@ -738,9 +746,9 @@ isettcval: TOK_TCVAL TOK_FLOAT
 {
   int ifcnt = ifs_in_curr_cfg;
   struct olsr_if *ifs = olsr_cnf->interfaces;
-  
+
   PARSER_DEBUG_PRINTF("\tTC validity: %0.2f\n", (double)$2->floating);
-  
+
  SET_IFS_CONF(ifs, ifcnt, tc_params.validity_time, $2->floating);
 
   free($2);
@@ -753,7 +761,7 @@ isetmidint: TOK_MIDINT TOK_FLOAT
 
 
   PARSER_DEBUG_PRINTF("\tMID interval: %0.2f\n", (double)$2->floating);
-  
+
   SET_IFS_CONF(ifs, ifcnt, mid_params.emission_interval, $2->floating);
 
   free($2);
@@ -765,7 +773,7 @@ isetmidval: TOK_MIDVAL TOK_FLOAT
   struct olsr_if *ifs = olsr_cnf->interfaces;
 
   PARSER_DEBUG_PRINTF("\tMID validity: %0.2f\n", (double)$2->floating);
-  
+
   SET_IFS_CONF(ifs, ifcnt, mid_params.validity_time, $2->floating);
 
   free($2);
@@ -775,7 +783,7 @@ isethnaint: TOK_HNAINT TOK_FLOAT
 {
   int ifcnt = ifs_in_curr_cfg;
   struct olsr_if *ifs = olsr_cnf->interfaces;
-  
+
   PARSER_DEBUG_PRINTF("\tHNA interval: %0.2f\n", (double)$2->floating);
 
   SET_IFS_CONF(ifs, ifcnt, hna_params.emission_interval, $2->floating);
@@ -1289,6 +1297,38 @@ alq_aging: TOK_LQ_AGING TOK_FLOAT
 }
 ;
 
+alq_alpha: TOK_LQ_ALPHA TOK_FLOAT
+{
+  PARSER_DEBUG_PRINTF("Link quality alpha parameter %f\n", (double)$2->floating);
+  olsr_cnf->lq_alpha = $2->floating;
+  free($2);
+}
+;
+
+alq_beta: TOK_LQ_BETA TOK_FLOAT
+{
+  PARSER_DEBUG_PRINTF("Link quality beta parameter %f\n", (double)$2->floating);
+  olsr_cnf->lq_beta = $2->floating;
+  free($2);
+}
+;
+
+alq_gamma: TOK_LQ_GAMMA TOK_FLOAT
+{
+  PARSER_DEBUG_PRINTF("Link quality gamma parameter %f\n", (double)$2->floating);
+  olsr_cnf->lq_gamma = $2->floating;
+  free($2);
+}
+;
+
+alq_delta: TOK_LQ_DELTA TOK_FLOAT
+{
+  PARSER_DEBUG_PRINTF("Link quality delta parameter %f\n", (double)$2->floating);
+  olsr_cnf->lq_delta = $2->floating;
+  free($2);
+}
+;
+
 amin_tc_vtime: TOK_MIN_TC_VTIME TOK_FLOAT
 {
   PARSER_DEBUG_PRINTF("Minimum TC validity time %f\n", (double)$2->floating);
@@ -1632,7 +1672,7 @@ ismart_gw_prefix: TOK_SMART_GW_PREFIX TOK_IPV6_ADDR TOK_INTEGER
     YYABORT;
   }
 	olsr_cnf->smart_gw_prefix.prefix_len = (uint8_t)$3->integer;
-	
+
 	free($2);
 	free($3);
 }
@@ -1644,7 +1684,7 @@ ismart_gw_prefix: TOK_SMART_GW_PREFIX TOK_IPV6_ADDR TOK_INTEGER
     YYABORT;
   }
 	olsr_cnf->smart_gw_prefix.prefix_len = (uint8_t)$4->integer;
-	
+
 	free($2);
 	free($4);
 }
@@ -1665,7 +1705,7 @@ bsrc_ip_routes: TOK_SRC_IP_ROUTES TOK_BOOLEAN
 amain_ip: TOK_MAIN_IP TOK_IPV4_ADDR
 {
   PARSER_DEBUG_PRINTF("Fixed Main IP: %s\n", $2->string);
-  
+
   if (olsr_cnf->ip_version != AF_INET
       || inet_pton(olsr_cnf->ip_version, $2->string, &olsr_cnf->main_addr) != 1) {
     fprintf(stderr, "Bad main IP: %s\n", $2->string);
@@ -1677,7 +1717,7 @@ amain_ip: TOK_MAIN_IP TOK_IPV4_ADDR
         |       TOK_MAIN_IP TOK_IPV6_ADDR
 {
   PARSER_DEBUG_PRINTF("Fixed Main IP: %s\n", $2->string);
-  
+
   if (olsr_cnf->ip_version != AF_INET6
       || inet_pton(olsr_cnf->ip_version, $2->string, &olsr_cnf->main_addr) != 1) {
     fprintf(stderr, "Bad main IP: %s\n", $2->string);
@@ -1699,7 +1739,7 @@ bset_ipforward: TOK_SET_IPFORWARD TOK_BOOLEAN
 plblock: TOK_PLUGIN TOK_STRING
 {
   struct plugin_entry *pe, *last;
-  
+
   pe = olsr_cnf->plugins;
   last = NULL;
   while (pe != NULL) {
@@ -1733,7 +1773,7 @@ plblock: TOK_PLUGIN TOK_STRING
 
     PARSER_DEBUG_PRINTF("Plugin: %s\n", $2->string);
   }
-  
+
   /* Queue */
   pe->next = olsr_cnf->plugins;
   olsr_cnf->plugins = pe;
@@ -1746,14 +1786,14 @@ plparam: TOK_PLPARAM TOK_STRING TOK_STRING
 {
   struct plugin_param *pp = malloc(sizeof(*pp));
   char *p;
-  
+
   if (pp == NULL) {
     fprintf(stderr, "Out of memory(ADD PP)\n");
     YYABORT;
   }
-  
+
   PARSER_DEBUG_PRINTF("Plugin param key:\"%s\" val: \"%s\"\n", $2->string, $3->string);
-  
+
   pp->key = $2->string;
   pp->value = $3->string;
 

@@ -53,6 +53,7 @@
 
 /* System includes */
 #include <nmealib/info.h>
+#include <OlsrdPudWireFormat/wireFormat.h>
 
 /*
  * Version
@@ -71,7 +72,7 @@
 unsigned int gpsToOlsr(NmeaInfo *nmeaInfo, union olsr_message *olsrMessage,
 		unsigned int olsrMessageSize, unsigned long long validityTime);
 
-unsigned int gpsFromOlsr(union olsr_message *olsrMessage,
+unsigned int gpsFromOlsr(union olsr_message *olsrMessage, PudOlsrPositionUpdate **olsrGpsMessage, 
 		unsigned char * txGpsBuffer, unsigned int txGpsBufferSize);
 
 #endif /* _PUD_GPSCONVERSION_H_ */

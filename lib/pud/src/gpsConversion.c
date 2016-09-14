@@ -78,7 +78,7 @@
  - the length of the transmit string placed in the txGpsBuffer
  - 0 (zero) in case of an error
  */
-unsigned int gpsFromOlsr(union olsr_message *olsrMessage,
+unsigned int gpsFromOlsr(union olsr_message *olsrMessage, PudOlsrPositionUpdate **olsrPositionUpdate,
 		unsigned char * txGpsBuffer, unsigned int txGpsBufferSize) {
 	unsigned long validityTime;
 
@@ -105,6 +105,7 @@ unsigned int gpsFromOlsr(union olsr_message *olsrMessage,
 
 	PudOlsrPositionUpdate * olsrGpsMessage =
 			getOlsrMessagePayload(olsr_cnf->ip_version, olsrMessage);
+	*olsrPositionUpdate = olsrGpsMessage;
 
 	if (unlikely(getPositionUpdateVersion(olsrGpsMessage) != PUD_WIRE_FORMAT_VERSION)) {
 		/* currently we can only handle our own version */

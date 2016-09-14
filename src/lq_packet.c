@@ -349,6 +349,10 @@ serialize_lq_hello(struct lq_hello_message *lq_hello, struct interface_olsr *out
 
   off += sizeof(struct lq_hello_header);
 
+  // now, add global lq information
+
+  off += olsr_serialize_hello_global_lq_data(msg_buffer + off);
+
   // our work buffer starts at 'off'...
 
   buff = msg_buffer + off;
@@ -540,6 +544,10 @@ serialize_lq_tc(struct lq_tc_message *lq_tc, struct interface_olsr *outif)
   // 'off' is the offset of the byte following the LQ_TC header
 
   off += sizeof(struct lq_tc_header);
+
+  // now, add global lq information
+
+  off += olsr_serialize_tc_global_lq_data(msg_buffer + off);
 
   // our work buffer starts at 'off'...
 

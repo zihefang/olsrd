@@ -53,7 +53,7 @@
 #include "lq_plugin_default_fpm.h"
 
 static void default_lq_initialize_fpm(void);
-static olsr_linkcost default_lq_calc_cost_fpm(const void *lq);
+static olsr_linkcost default_lq_calc_cost_fpm(void *lq);
 static void default_lq_packet_loss_worker_fpm(struct link_entry *link, void *lq, bool lost);
 static void default_lq_memorize_foreign_hello_fpm(void *local, void *foreign);
 static int default_lq_serialize_hello_lq_pair_fpm(unsigned char *buff, void *lq);
@@ -79,16 +79,23 @@ struct lq_handler lq_etx_fpm_handler = {
   &default_lq_copy_link2tc_fpm,
   &default_lq_clear_fpm,
   &default_lq_clear_fpm,
+  &default_lq_clear_fpm,
 
   &default_lq_serialize_hello_lq_pair_fpm,
   &default_lq_serialize_tc_lq_pair_fpm,
   &default_lq_deserialize_hello_lq_pair_fpm,
   &default_lq_deserialize_tc_lq_pair_fpm,
 
+  &olsr_default_serialize_global_lq,
+  &olsr_default_serialize_global_lq,
+  &olsr_default_deserialize_global_lq,
+  &olsr_default_deserialize_global_lq,
+
   &default_lq_print_fpm,
   &default_lq_print_fpm,
   &default_lq_get_cost_scaled,
 
+  sizeof(struct default_lq_fpm),
   sizeof(struct default_lq_fpm),
   sizeof(struct default_lq_fpm),
   4,
@@ -109,7 +116,7 @@ default_lq_initialize_fpm(void)
 }
 
 static olsr_linkcost
-default_lq_calc_cost_fpm(const void *ptr)
+default_lq_calc_cost_fpm(void *ptr)
 {
   const struct default_lq_fpm *lq = ptr;
   olsr_linkcost cost;

@@ -62,7 +62,7 @@
 
 static void default_lq_initialize_ffeth(void);
 
-static olsr_linkcost default_lq_calc_cost_ffeth(const void *lq);
+static olsr_linkcost default_lq_calc_cost_ffeth(void *lq);
 
 static void default_lq_packet_loss_worker_ffeth(struct link_entry *link, void *lq, bool lost);
 static void default_lq_memorize_foreign_hello_ffeth(void *local, void *foreign);
@@ -93,11 +93,17 @@ struct lq_handler lq_etx_ffeth_handler = {
   &default_lq_copy_link2tc_ffeth,
   &default_lq_clear_ffeth_hello,
   &default_lq_clear_ffeth,
+  &default_lq_clear_ffeth_hello,
 
   &default_lq_serialize_hello_lq_pair_ffeth,
   &default_lq_serialize_tc_lq_pair_ffeth,
   &default_lq_deserialize_hello_lq_pair_ffeth,
   &default_lq_deserialize_tc_lq_pair_ffeth,
+
+  &olsr_default_serialize_global_lq,
+  &olsr_default_serialize_global_lq,
+  &olsr_default_deserialize_global_lq,
+  &olsr_default_deserialize_global_lq,
 
   &default_lq_print_ffeth,
   &default_lq_print_ffeth,
@@ -105,6 +111,7 @@ struct lq_handler lq_etx_ffeth_handler = {
 
   sizeof(struct default_lq_ffeth_hello),
   sizeof(struct default_lq_ffeth),
+  sizeof(struct default_lq_ffeth_hello),
   4,
   4
 };
@@ -303,7 +310,7 @@ default_lq_initialize_ffeth(void)
 }
 
 static olsr_linkcost
-default_lq_calc_cost_ffeth(const void *ptr)
+default_lq_calc_cost_ffeth(void *ptr)
 {
   const struct default_lq_ffeth *lq = ptr;
   olsr_linkcost cost;

@@ -57,7 +57,7 @@ NOSTRIP ?= 0
 NO_DEBUG_MESSAGES ?= 0
 
 # the optimize option to be set for gcc
-OPTIMIZE ?= 
+OPTIMIZE ?=
 
 # enable mudflap with 1 or deactivate with 0
 # you need a recent enough gcc and the libmudflap installed
@@ -242,17 +242,17 @@ ifeq ($(OS),win32)
 endif
 LDFLAGS +=	-shared
 LDFLAGS +=	-Wl,-soname,$(PLUGIN_SONAME)
-LDFLAGS +=	-Wl,--version-script=version-script.txt 
+LDFLAGS +=	-Wl,--version-script=version-script.txt
 else
 # c and ld flags for main
 ifeq ($(OS),win32)
   LDFLAGS +=	-Wl,-export-all-symbols
-else 
-  LDFLAGS +=	-Wl,-export-dynamic 
+else
+  LDFLAGS +=	-Wl,-export-dynamic
 endif
 LDFLAGS +=	-Wl,-rpath,$(LIBDIR)
 endif
-# LDFLAGS for all 
+# LDFLAGS for all
 LDFLAGS +=	-Wl,--warn-common
 # See above at "-ffunction-sections" for an explanation (and why it is disabled).
 #LDOPTS +=	-Wl,--gc-sections
@@ -261,6 +261,7 @@ LDFLAGS +=	-Wl,--warn-common
 ifneq ($(MUDFLAP),0)
 LIBS +=		-lmudflapth
 endif
+LIBS +=   -lm
 
 ifeq ($(OS),linux)
   ifneq ($(SANITIZE_ADDRESS),0)
@@ -327,7 +328,7 @@ endif
 else
 CPPFLAGS +=	-DNDEBUG
 ifeq ($(OPTIMIZE),)
-OPTIMIZE += -O2 -D_FORTIFY_SOURCE=2 
+OPTIMIZE += -O2 -D_FORTIFY_SOURCE=2
 endif
 endif
 ifeq ($(NO_DEBUG_MESSAGES),1)
@@ -365,7 +366,7 @@ endif
 TAGFILE ?=	src/TAGS
 
 help:
-	@echo 
+	@echo
 	@echo '***** olsr.org olsr daemon Make ****'
 	@echo ' Automatic detection of your OS     '
 	@echo ' failed!                            '

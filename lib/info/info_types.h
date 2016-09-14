@@ -85,7 +85,8 @@ typedef struct {
 #define SIW_2HOP                         (1ULL <<  8)
 #define SIW_SGW                          (1ULL <<  9)
 #define SIW_PUD_POSITION                 (1ULL << 10)
-#define SIW_RUNTIME_ALL                  (SIW_NEIGHBORS | SIW_LINKS | SIW_ROUTES | SIW_HNA | SIW_MID | SIW_TOPOLOGY | SIW_GATEWAYS | SIW_INTERFACES | SIW_2HOP | SIW_SGW | SIW_PUD_POSITION)
+#define SIW_LQ_GPS                       (1ULL << 20) /* Predictive-OLSR */
+#define SIW_RUNTIME_ALL                  (SIW_NEIGHBORS | SIW_LINKS | SIW_ROUTES | SIW_HNA | SIW_MID | SIW_TOPOLOGY | SIW_GATEWAYS | SIW_INTERFACES | SIW_2HOP | SIW_SGW | SIW_PUD_POSITION | SIW_LQ_GPS)
 #define SIW_NEIGHBORS_FREIFUNK           (SIW_NEIGHBORS | SIW_LINKS) /* special */
 
 /* these only change at olsrd startup */

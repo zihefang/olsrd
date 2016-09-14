@@ -56,9 +56,13 @@
 #include "posFile.h"
 
 /* OLSRD includes */
+#include "olsr.h"
+#include "debug.h"
 #include "net_olsr.h"
+#include "lq_plugin_gps_pud.h"
 
 /* System includes */
+#include <time.h>
 #include <nmealib/context.h>
 #include <nmealib/nmath.h>
 #include <nmealib/sentence.h>
@@ -129,6 +133,35 @@ static struct GpsdConnectionState connectionTracking;
 /*
  * Functions
  */
+
+ /*static void print_nmeaInfo(nmeaINFO *info, const char *s, size_t len) {
+ 	olsr_buffered_printf(len + 128, "[PUD] %s:\nlat = %5f ; lon = %5f ; elv = %ld ; speed = %ld ; track = %ld ; hdop = %5f",
+ 		s, info->lat, info->lon, lrint(info->elv), lrint(info->speed),
+ 		lrint(info->track), info->HDOP);
+ }*/
+
+ static void update_lq_gps_record(void) {
+ 	struct tm timestruct = {
+ 		transmitGpsInformation.txPosition.nmeaInfo.utc.sec,
+ 		transmitGpsInformation.txPosition.nmeaInfo.utc.min,
+ 		transmitGpsInformation.txPosition.nmeaInfo.utc.hour,
+ 		transmitGpsInformation.txPosition.nmeaInfo.utc.day,
+ 		transmitGpsInformation.txPosition.nmeaInfo.utc.mon,
+ 		transmitGpsInformation.txPosition.nmeaInfo.utc.year,
+ 		0, 0, 0, 0, "UTC"
+ 	};
+ 	struct lq_gps_record local_gps_record = {
+ 		(uint32_t) mktime(&timestruct),
+ 		transmitGpsInformation.txPosition.nmeaInfo.latitude,
+ 		transmitGpsInformation.txPosition.nmeaInfo.longitude,
+ 		(int32_t) lrint(transmitGpsInformation.txPosition.nmeaInfo.elevation),
+ 		(uint32_t) lrint(transmitGpsInformation.txPosition.nmeaInfo.speed),
+ 		(uint32_t) lrint(transmitGpsInformation.txPosition.nmeaInfo.track),
+ 		transmitGpsInformation.txPosition.nmeaInfo.hdop
+ 	};
+ 	//print_nmeaInfo(&transmitGpsInformation.txPosition.nmeaInfo, "Updating lq_gps_info", 20);
+ 	lq_update_local_record_pud(&local_gps_record);
+ }
 
 /**
  Clear the MovementType

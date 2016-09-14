@@ -61,8 +61,11 @@
 #include "net_olsr.h"
 #include "parser.h"
 #include "log.h"
+#include "lq_plugin_gps_pud.h"
 
 /* System includes */
+#include <time.h>
+#include <OlsrdPudWireFormat/wireFormat.h>
 
 /** The size of the buffer in which the received downlink message is stored */
 #define BUFFER_SIZE_RX_DOWNLINK	2048
@@ -179,6 +182,10 @@ bool packetReceivedFromOlsr(union olsr_message *olsrMessage,
 	unsigned int transmitStringLength;
 	unsigned char buffer[BUFFER_SIZE_TX_OLSR];
 
+	PudOlsrPositionUpdate *olsrPositionUpdate;
+	struct tm timestruct;
+	struct lq_gps_record gps_record;
+
 	/* when we do not loopback then check if the message originated from this
 	 * node: back off */
 	if (!getUseLoopback() && ipequal(originator, &olsr_cnf->main_addr)) {
@@ -195,12 +202,22 @@ bool packetReceivedFromOlsr(union olsr_message *olsrMessage,
 		addToDeDup(&deDupList, olsrMessage);
 	}
 
-	transmitStringLength = gpsFromOlsr(olsrMessage, &buffer[0], sizeof(buffer));
+	transmitStringLength = gpsFromOlsr(olsrMessage, &olsrPositionUpdate, &buffer[0], sizeof(buffer));
 	assert(transmitStringLength <= sizeof(buffer));
 	if (unlikely(transmitStringLength == 0)) {
 		return false;
 	}
 
+	/* update GPS information for lq_plugin_gps */
+	getPositionUpdateTime(olsrPositionUpdate, time(NULL), &timestruct);
+	gps_record.time = (uint32_t) mktime(&timestruct);
+	gps_record.lat = getPositionUpdateLatitude(olsrPositionUpdate);
+	gps_record.lon = getPositionUpdateLongitude(olsrPositionUpdate);
+	gps_record.elv = (int32_t) getPositionUpdateAltitude(olsrPositionUpdate);
+	gps_record.speed = (uint32_t) getPositionUpdateSpeed(olsrPositionUpdate);
+	gps_record.track = (uint32_t) getPositionUpdateTrack(olsrPositionUpdate);
+	gps_record.hdop = getPositionUpdateHdop(olsrPositionUpdate);
+	lq_update_gps_record_pud(originator, &gps_record);
 	sendToAllTxInterfaces(&buffer[0], transmitStringLength);
 
 	return true;

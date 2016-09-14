@@ -61,6 +61,9 @@
 #include "linux/lq_plugin_ffeth_nl80211.h"
 #endif
 
+#include "lq_plugin_gps_pud.h"
+#include "lq_plugin_gps_lite.h"
+
 #include <assert.h>
 #include <math.h>
 
@@ -114,6 +117,9 @@ init_lq_handler_tree(void)
 #ifdef LINUX_NL80211
   register_lq_handler(&lq_etx_ffeth_nl80211_handler, LQ_ALGORITHM_ETX_FFETH_NL80211_NAME);
 #endif
+  // gps handlers
+  register_lq_handler(&lq_etx_gps_pud_handler, LQ_ALGORITHM_ETX_GPS_PUD_NAME);
+  register_lq_handler(&lq_etx_gps_lite_handler, LQ_ALGORITHM_ETX_GPS_LITE_NAME);
 
   if (olsr_cnf->lq_algorithm == NULL) {
     activate_lq_handler(DEF_LQ_ALGORITHM);
@@ -159,7 +165,7 @@ register_lq_handler(struct lq_handler *handler, const char *name)
  * @return linkcost
  */
 olsr_linkcost
-olsr_calc_tc_cost(const struct tc_edge_entry * tc_edge)
+olsr_calc_tc_cost(struct tc_edge_entry * tc_edge)
 {
   assert((const char *)tc_edge + sizeof(*tc_edge) >= (const char *)tc_edge->linkquality);
   return active_lq_handler->calc_tc_cost(tc_edge->linkquality);
@@ -232,6 +238,68 @@ olsr_deserialize_tc_lq_pair(const uint8_t ** curr, struct tc_edge_entry *edge)
 }
 
 /**
+ * olsr_serialize_hello_global_lq_data
+ *
+ * this function adds lq information about the current host into binary package
+ * format
+ *
+ * @param buff pointer to binary buffer to write into
+ * @return number of bytes that have been written
+ */
+
+int
+olsr_serialize_hello_global_lq_data(unsigned char *buff)
+{
+  return active_lq_handler->serialize_hello_global_lq(buff);
+}
+
+/**
+ * olsr_serialize_tc_global_lq_data
+ *
+ * this function adds lq information about the current host into binary package
+ * format
+ *
+ * @param buff pointer to binary buffer to write into
+ * @return number of bytes that have been written
+ */
+
+int
+olsr_serialize_tc_global_lq_data(unsigned char *buff)
+{
+  return active_lq_handler->serialize_tc_global_lq(buff);
+}
+
+/**
+ * olsr_deserialize_hello_global_lq_data
+ *
+ * this function reads the global lq information of a binary package,
+ * and process it with some way.
+ *
+ * @param curr pointer to the current buffer pointer
+ */
+
+void
+olsr_deserialize_hello_global_lq_data(const uint8_t ** curr)
+{
+  active_lq_handler->deserialize_hello_global_lq(curr);
+}
+
+/**
+ * olsr_deserialize_tc_global_lq_data
+ *
+ * this function reads the global lq information of a binary package,
+ * and process it with some way.
+ *
+ * @param curr pointer to the current buffer pointer
+ */
+
+void
+olsr_deserialize_tc_global_lq_data(const uint8_t ** curr)
+{
+  active_lq_handler->deserialize_tc_global_lq(curr);
+}
+
+/**
  * olsr_update_packet_loss_worker
  *
  * this function is called every times a hello package for a certain link_entry
@@ -286,7 +354,7 @@ const char *
 get_link_entry_text(struct link_entry *entry, char separator, struct lqtextbuffer *buffer)
 {
   assert((const char *)entry + sizeof(*entry) >= (const char *)entry->linkquality);
-  return active_lq_handler->print_hello_lq(entry->linkquality, separator, buffer);
+  return active_lq_handler->print_link_lq(entry->linkquality, separator, buffer);
 }
 
 /**
@@ -395,8 +463,8 @@ olsr_copylq_link_entry_2_tc_edge_entry(struct tc_edge_entry *target, struct link
 }
 
 /* clear the lq of a link set entry */
-void olsr_clear_hello_lq(struct link_entry *link) {
-  active_lq_handler->clear_hello(link->linkquality);
+void olsr_clear_link_lq(struct link_entry *link) {
+  active_lq_handler->clear_link(link->linkquality);
 }
 
 /**
@@ -406,12 +474,12 @@ void olsr_clear_hello_lq(struct link_entry *link) {
  *
  * @param target pointer to tc_mpr_addr
  */
-void
+/*void
 olsr_clear_tc_lq(struct tc_mpr_addr *target)
 {
   assert((const char *)target + sizeof(*target) >= (const char *)target->linkquality);
   active_lq_handler->clear_tc(target->linkquality);
-}
+}*/
 
 /**
  * olsr_malloc_hello_neighbor
@@ -494,10 +562,10 @@ olsr_malloc_link_entry(const char *id)
 {
   struct link_entry *h;
 
-  h = olsr_malloc(sizeof(struct link_entry) + active_lq_handler->hello_lq_size, id);
+  h = olsr_malloc(sizeof(struct link_entry) + active_lq_handler->link_lq_size, id);
 
   assert((const char *)h + sizeof(*h) >= (const char *)h->linkquality);
-  active_lq_handler->clear_hello(h->linkquality);
+  active_lq_handler->clear_link(h->linkquality);
   return h;
 }
 
@@ -519,6 +587,15 @@ void olsr_relevant_linkcost_change(void) {
 
   /* XXX - we should check whether we actually announce this neighbour */
   signal_link_changes(true);
+}
+
+int
+olsr_default_serialize_global_lq(unsigned char *buff __attribute__((unused))) {
+  return 0;
+}
+void
+olsr_default_deserialize_global_lq(const uint8_t ** curr __attribute__((unused))) {
+  return;
 }
 
 /*
